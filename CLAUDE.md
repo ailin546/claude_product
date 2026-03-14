@@ -1,114 +1,81 @@
-# Dual-System Development Framework
+# Triple-System Development Framework
 
-This project integrates two complementary systems for Claude Code:
-- **[Agency Agents](https://github.com/msitarzewski/agency-agents)** — WHO: 78 specialized agent personas (domain expertise, identity, communication style)
-- **[Superpowers](https://github.com/obra/superpowers)** — HOW: Development workflow skills (TDD, systematic debugging, quality gates)
+Three complementary systems integrated for Claude Code:
 
-## System Integration Rules
+| Layer | System | Source | What It Provides |
+|-------|--------|--------|-----------------|
+| **Infrastructure** | [ECC](https://github.com/affaan-m/everything-claude-code) | affaan-m | Hooks, memory, learning, 48 commands, multi-language rules |
+| **Process** | [Superpowers](https://github.com/obra/superpowers) | obra | TDD iron law, systematic debugging, brainstorming, quality gates |
+| **Expertise** | [Agency Agents](https://github.com/msitarzewski/agency-agents) | msitarzewski | 78 specialized personas with domain knowledge |
 
-### Priority Order
-1. **User's explicit instructions** — always highest priority
-2. **Superpowers skills** — process/workflow layer (HOW to work)
-3. **Agency Agents personas** — expertise/identity layer (WHO to be)
-4. **Default system behavior** — lowest priority
-
-### Dual-System Activation Flow
-
-For EVERY task, execute both layers:
+## How They Work Together
 
 ```
-User Request
+User Request: "给用户系统加上OAuth登录"
     │
-    ├─► [Superpowers Layer] Check: does a skill apply? (even 1% chance → invoke it)
-    │   brainstorming, writing-plans, subagent-driven-development,
-    │   test-driven-development, systematic-debugging, verification-before-completion,
-    │   requesting-code-review, using-git-worktrees, finishing-a-development-branch,
-    │   executing-plans, dispatching-parallel-agents, receiving-code-review
+    ├─► ECC Infrastructure (自动触发)
+    │   SessionStart → 加载上次会话状态
+    │   PostToolUse → 自动格式化、类型检查
+    │   Stop → 保存状态、提取模式、追踪成本
     │
-    └─► [Agency Agents Layer] Route to matching agent persona
-        Read .claude/agents/<agent-name>.md, adopt identity + expertise
+    ├─► Superpowers Process (流程纪律)
+    │   brainstorming → 探索需求、生成设计文档
+    │   writing-plans → 拆解为TDD小任务
+    │   test-driven-development → 铁律：先写失败测试
+    │   systematic-debugging → 4阶段根因分析
+    │   verification-before-completion → 跑验证才能说完成
+    │
+    └─► Agency Agents Expertise (专业视角)
+        Security Engineer → 审计OAuth安全性
+        Backend Architect → 设计认证架构
+        Code Reviewer → 专业检查清单审查
 ```
 
-### Conflict Resolution
+## Priority Order
 
-| Area | Superpowers (process) | Agency Agents (expertise) | Resolution |
-|------|----------------------|--------------------------|------------|
-| Code Review | Review flow & gates | Review standards & checklist | Superpowers flow + Agency standards |
-| Orchestration | subagent-driven-development | agents-orchestrator | Superpowers process + Agency sub-agent personas |
-| Testing | TDD iron law | Domain-specific test criteria | Superpowers TDD + Agency test expertise |
-| Debugging | 4-phase systematic method | Domain knowledge | Superpowers process + Agency domain context |
+1. **User's explicit instructions** — always highest
+2. **ECC hooks & rules** — infrastructure (100% reliable)
+3. **Superpowers skills** — process/workflow (HOW)
+4. **Agency Agents personas** — expertise/identity (WHO)
 
-## Agency Agents Auto-Routing
+## Quick Commands (ECC)
 
-Automatically match task context to the best agent persona from `.claude/agents/`.
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `/plan` | 规划实现 | `/verify` | 验证检查 |
+| `/tdd` | 测试驱动开发 | `/learn` | 提取模式 |
+| `/code-review` | 代码审查 | `/save-session` | 保存会话 |
+| `/e2e` | E2E测试 | `/resume-session` | 恢复会话 |
+| `/build-fix` | 修复构建 | `/harness-audit` | 审计配置 |
 
-### Code Writing & Implementation
-| Task Signal | Primary Agent | Secondary |
-|-------------|--------------|-----------|
-| React, Vue, Angular, CSS, HTML, UI | `engineering-frontend-developer` | `design-ui-designer` |
-| API, database, server, microservices | `engineering-backend-architect` | `engineering-database-optimizer` |
-| Mobile, iOS, Android | `engineering-mobile-app-builder` | — |
-| AI/ML, model, data pipeline | `engineering-ai-engineer` | `engineering-data-engineer` |
-| Smart contract, Solidity | `engineering-solidity-smart-contract-engineer` | `blockchain-security-auditor` |
-| MCP server/tool | `specialized-mcp-builder` | — |
-| Quick prototype, MVP | `engineering-rapid-prototyper` | — |
-| General coding | `engineering-senior-developer` | — |
+## Agent Routing (Agency Agents - auto)
 
-### Code Quality & Security
-| Task Signal | Primary Agent | Secondary |
-|-------------|--------------|-----------|
-| Code review, PR review | `engineering-code-reviewer` | — |
-| Architecture, system design | `engineering-software-architect` | `engineering-backend-architect` |
-| Security audit, vulnerability | `engineering-security-engineer` | `engineering-threat-detection-engineer` |
-| Compliance, legal | `compliance-auditor` | `support-legal-compliance-checker` |
-
-### DevOps & Testing
-| Task Signal | Primary Agent | Secondary |
-|-------------|--------------|-----------|
-| CI/CD, Docker, K8s | `engineering-devops-automator` | — |
-| Incident, outage | `engineering-incident-response-commander` | `engineering-sre` |
-| Write tests | `testing-api-tester` | `testing-evidence-collector` |
-| Performance benchmark | `testing-performance-benchmarker` | — |
-| Accessibility | `testing-accessibility-auditor` | — |
-
-### Design & Product
-| Task Signal | Primary Agent | Secondary |
-|-------------|--------------|-----------|
-| UI design, design system | `design-ui-designer` | `design-ux-architect` |
-| Documentation | `engineering-technical-writer` | — |
-| Sprint planning | `product-sprint-prioritizer` | `project-manager-senior` |
-| Full project, end-to-end | `agents-orchestrator` | (coordinates all) |
-
-## Superpowers Workflow Reference
-
-### Core Flow
-```
-brainstorming → writing-plans → using-git-worktrees → subagent-driven-development → finishing-a-development-branch
-```
-
-### Key Skills
-| Situation | Skill |
-|-----------|-------|
-| Building anything new | `brainstorming` (BEFORE any code) |
-| Multi-step implementation | `writing-plans` → `subagent-driven-development` |
-| Writing any code | `test-driven-development` (test FIRST) |
-| Bug or test failure | `systematic-debugging` (root cause FIRST) |
-| Claiming "done" | `verification-before-completion` (evidence FIRST) |
-| Review code | `requesting-code-review` |
-| Parallel tasks | `dispatching-parallel-agents` |
-| Work complete | `finishing-a-development-branch` |
+| Task | Agent | Task | Agent |
+|------|-------|------|-------|
+| React/Vue/CSS | `engineering-frontend-developer` | Security audit | `engineering-security-engineer` |
+| API/Database | `engineering-backend-architect` | CI/CD/Docker | `engineering-devops-automator` |
+| Mobile | `engineering-mobile-app-builder` | Code review | `engineering-code-reviewer` |
+| AI/ML | `engineering-ai-engineer` | Architecture | `engineering-software-architect` |
+| MCP tool | `specialized-mcp-builder` | Full project | `agents-orchestrator` |
+| Prototype | `engineering-rapid-prototyper` | Tests | `testing-api-tester` |
 
 ## File Structure
 
 ```
 .claude/
-├── agents/          ← 78 Agency Agent personas
-├── skills/          ← 14 Superpowers skill modules
-├── strategies/      ← Strategy playbooks (phases 0-6) & runbooks
-└── examples/        ← Workflow examples
+├── settings.json      ← Hooks config (ECC)
+├── agents/            ← 96 agents (Agency + ECC + Superpowers)
+├── skills/            ← 106 skills (Superpowers + ECC)
+├── commands/          ← 48 slash commands (ECC)
+├── rules/             ← 44 rule files (common + per-language)
+├── scripts/hooks/     ← 24 hook scripts (ECC)
+├── strategies/        ← Playbooks & runbooks
+├── mcp-configs/       ← MCP server templates
+└── examples/          ← Workflow examples
 ```
 
-## Sources
+## Sources (all MIT)
 
-- Agency Agents: [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (MIT)
-- Superpowers: [obra/superpowers](https://github.com/obra/superpowers) (MIT)
+- [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents)
+- [obra/superpowers](https://github.com/obra/superpowers)
+- [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code)
