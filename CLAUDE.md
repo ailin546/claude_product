@@ -1,137 +1,114 @@
-# Agency Agents for Claude Code
+# Dual-System Development Framework
 
-This project integrates [agency-agents](https://github.com/msitarzewski/agency-agents) — a collection of 100+ specialized AI agent personas — into Claude Code for all development workflows.
+This project integrates two complementary systems for Claude Code:
+- **[Agency Agents](https://github.com/msitarzewski/agency-agents)** — WHO: 78 specialized agent personas (domain expertise, identity, communication style)
+- **[Superpowers](https://github.com/obra/superpowers)** — HOW: Development workflow skills (TDD, systematic debugging, quality gates)
 
-## Auto-Routing: Automatic Agent Assignment
+## System Integration Rules
 
-**When receiving ANY task, you MUST automatically identify and activate the most appropriate agent(s) from `.claude/agents/` based on the task context.** Do NOT wait for the user to say "activate X agent." Read the matching agent file(s) and adopt that persona's identity, rules, workflows, and communication style.
+### Priority Order
+1. **User's explicit instructions** — always highest priority
+2. **Superpowers skills** — process/workflow layer (HOW to work)
+3. **Agency Agents personas** — expertise/identity layer (WHO to be)
+4. **Default system behavior** — lowest priority
 
-### Routing Rules
+### Dual-System Activation Flow
 
-Apply the following routing matrix to determine which agent(s) to activate. If a task spans multiple domains, activate the primary agent and reference secondary agents as needed.
-
-#### Code Writing & Implementation
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| React, Vue, Angular, CSS, HTML, UI components | `engineering-frontend-developer` | `design-ui-designer` |
-| API, database, server, microservices, system design | `engineering-backend-architect` | `engineering-database-optimizer` |
-| Mobile app, iOS, Android, React Native, Flutter | `engineering-mobile-app-builder` | — |
-| AI/ML, model training, data pipeline, embeddings | `engineering-ai-engineer` | `engineering-data-engineer` |
-| Smart contract, Solidity, blockchain | `engineering-solidity-smart-contract-engineer` | `blockchain-security-auditor` |
-| WeChat mini program | `engineering-wechat-mini-program-developer` | — |
-| Embedded, firmware, IoT | `engineering-embedded-firmware-engineer` | — |
-| Feishu/Lark integration | `engineering-feishu-integration-developer` | — |
-| MCP server/tool building | `specialized-mcp-builder` | — |
-| Quick prototype, MVP, proof of concept | `engineering-rapid-prototyper` | — |
-| General coding (no specific domain) | `engineering-senior-developer` | — |
-
-#### Code Quality & Review
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Code review, PR review, review changes | `engineering-code-reviewer` | — |
-| Refactor, clean up, improve code quality | `engineering-code-reviewer` | `engineering-software-architect` |
-| Architecture design, system design | `engineering-software-architect` | `engineering-backend-architect` |
-
-#### Security
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Security audit, vulnerability scan, pen test | `engineering-security-engineer` | `engineering-threat-detection-engineer` |
-| Auth, authentication, authorization | `engineering-security-engineer` | `engineering-backend-architect` |
-| Blockchain/smart contract audit | `blockchain-security-auditor` | `engineering-security-engineer` |
-| Compliance, legal, regulatory | `compliance-auditor` | `support-legal-compliance-checker` |
-
-#### DevOps & Infrastructure
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| CI/CD, deployment, Docker, Kubernetes | `engineering-devops-automator` | — |
-| Monitoring, alerts, SLA, uptime | `engineering-sre` | `support-infrastructure-maintainer` |
-| Incident, outage, post-mortem | `engineering-incident-response-commander` | `engineering-sre` |
-| Git workflow, branching strategy | `engineering-git-workflow-master` | — |
-
-#### Testing
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Write tests, unit test, integration test | `testing-api-tester` | `testing-evidence-collector` |
-| Performance, benchmark, load test | `testing-performance-benchmarker` | — |
-| Accessibility, a11y, WCAG | `testing-accessibility-auditor` | — |
-| QA, verify, validate implementation | `testing-reality-checker` | `testing-evidence-collector` |
-| Analyze test results, test report | `testing-test-results-analyzer` | — |
-
-#### Design & UX
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| UI design, component design, design system | `design-ui-designer` | `design-ux-architect` |
-| User research, usability, user flow | `design-ux-researcher` | `design-ux-architect` |
-| Brand, logo, visual identity | `design-brand-guardian` | `design-visual-storyteller` |
-
-#### Documentation & Writing
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Documentation, API docs, README | `engineering-technical-writer` | — |
-| Generate report, document, template | `specialized-document-generator` | — |
-
-#### Product & Project Management
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Sprint planning, prioritize backlog | `product-sprint-prioritizer` | `project-manager-senior` |
-| Project plan, timeline, milestone | `project-manager-senior` | `project-management-project-shepherd` |
-| User feedback analysis | `product-feedback-synthesizer` | — |
-| Market research, trend analysis | `product-trend-researcher` | — |
-| Jira, ticket workflow | `project-management-jira-workflow-steward` | — |
-
-#### Complex Multi-Phase Tasks
-| Task Signal | Primary Agent | Secondary Agent(s) |
-|-------------|--------------|---------------------|
-| Full project, end-to-end build | `agents-orchestrator` | (coordinates all others) |
-| Startup MVP, new product | `agents-orchestrator` | See `.claude/strategies/runbooks/scenario-startup-mvp.md` |
-| Enterprise feature | `agents-orchestrator` | See `.claude/strategies/runbooks/scenario-enterprise-feature.md` |
-
-### How Auto-Routing Works
-
-1. **Analyze the task** — Parse keywords, intent, and context from the user's request
-2. **Match routing rules** — Find the best-matching row(s) from the tables above
-3. **Load agent persona** — Read the matched `.claude/agents/<agent-name>.md` file
-4. **Adopt the persona** — Follow the agent's identity, critical rules, workflows, and communication style
-5. **Execute with expertise** — Deliver work according to the agent's specialization and quality standards
-6. **Multi-agent handoff** — For complex tasks, the primary agent completes its work, then hands off to secondary agents as needed
-
-### Auto-Routing Examples
+For EVERY task, execute both layers:
 
 ```
-User: "帮我优化这个SQL查询"
-→ Auto-routes to: engineering-database-optimizer
-
-User: "Review this pull request"
-→ Auto-routes to: engineering-code-reviewer
-
-User: "Set up CI/CD for this project"
-→ Auto-routes to: engineering-devops-automator
-
-User: "这个API有安全漏洞吗？"
-→ Auto-routes to: engineering-security-engineer
-
-User: "Build a full e-commerce site"
-→ Auto-routes to: agents-orchestrator (coordinates frontend, backend, testing, etc.)
-
-User: "Write unit tests for the auth module"
-→ Auto-routes to: testing-api-tester
-
-User: "Design the onboarding flow"
-→ Auto-routes to: design-ux-architect + design-ui-designer
+User Request
+    │
+    ├─► [Superpowers Layer] Check: does a skill apply? (even 1% chance → invoke it)
+    │   brainstorming, writing-plans, subagent-driven-development,
+    │   test-driven-development, systematic-debugging, verification-before-completion,
+    │   requesting-code-review, using-git-worktrees, finishing-a-development-branch,
+    │   executing-plans, dispatching-parallel-agents, receiving-code-review
+    │
+    └─► [Agency Agents Layer] Route to matching agent persona
+        Read .claude/agents/<agent-name>.md, adopt identity + expertise
 ```
 
-## Agent Files Location
+### Conflict Resolution
 
-All agent persona files are in `.claude/agents/`. Each is a Markdown file with YAML frontmatter defining name, description, and personality, followed by detailed instructions covering identity, mission, rules, workflows, and communication style.
+| Area | Superpowers (process) | Agency Agents (expertise) | Resolution |
+|------|----------------------|--------------------------|------------|
+| Code Review | Review flow & gates | Review standards & checklist | Superpowers flow + Agency standards |
+| Orchestration | subagent-driven-development | agents-orchestrator | Superpowers process + Agency sub-agent personas |
+| Testing | TDD iron law | Domain-specific test criteria | Superpowers TDD + Agency test expertise |
+| Debugging | 4-phase systematic method | Domain knowledge | Superpowers process + Agency domain context |
 
-## Strategy & Playbooks
+## Agency Agents Auto-Routing
 
-Strategy documents in `.claude/strategies/` provide structured workflows:
+Automatically match task context to the best agent persona from `.claude/agents/`.
 
-- **Playbooks** (phases 0-6): Discovery, Strategy, Foundation, Build, Hardening, Launch, Operate
-- **Runbooks**: Enterprise Feature, Incident Response, Marketing Campaign, Startup MVP
-- **Coordination**: Agent activation prompts, handoff templates
+### Code Writing & Implementation
+| Task Signal | Primary Agent | Secondary |
+|-------------|--------------|-----------|
+| React, Vue, Angular, CSS, HTML, UI | `engineering-frontend-developer` | `design-ui-designer` |
+| API, database, server, microservices | `engineering-backend-architect` | `engineering-database-optimizer` |
+| Mobile, iOS, Android | `engineering-mobile-app-builder` | — |
+| AI/ML, model, data pipeline | `engineering-ai-engineer` | `engineering-data-engineer` |
+| Smart contract, Solidity | `engineering-solidity-smart-contract-engineer` | `blockchain-security-auditor` |
+| MCP server/tool | `specialized-mcp-builder` | — |
+| Quick prototype, MVP | `engineering-rapid-prototyper` | — |
+| General coding | `engineering-senior-developer` | — |
 
-## Source
+### Code Quality & Security
+| Task Signal | Primary Agent | Secondary |
+|-------------|--------------|-----------|
+| Code review, PR review | `engineering-code-reviewer` | — |
+| Architecture, system design | `engineering-software-architect` | `engineering-backend-architect` |
+| Security audit, vulnerability | `engineering-security-engineer` | `engineering-threat-detection-engineer` |
+| Compliance, legal | `compliance-auditor` | `support-legal-compliance-checker` |
 
-Based on [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (MIT License).
+### DevOps & Testing
+| Task Signal | Primary Agent | Secondary |
+|-------------|--------------|-----------|
+| CI/CD, Docker, K8s | `engineering-devops-automator` | — |
+| Incident, outage | `engineering-incident-response-commander` | `engineering-sre` |
+| Write tests | `testing-api-tester` | `testing-evidence-collector` |
+| Performance benchmark | `testing-performance-benchmarker` | — |
+| Accessibility | `testing-accessibility-auditor` | — |
+
+### Design & Product
+| Task Signal | Primary Agent | Secondary |
+|-------------|--------------|-----------|
+| UI design, design system | `design-ui-designer` | `design-ux-architect` |
+| Documentation | `engineering-technical-writer` | — |
+| Sprint planning | `product-sprint-prioritizer` | `project-manager-senior` |
+| Full project, end-to-end | `agents-orchestrator` | (coordinates all) |
+
+## Superpowers Workflow Reference
+
+### Core Flow
+```
+brainstorming → writing-plans → using-git-worktrees → subagent-driven-development → finishing-a-development-branch
+```
+
+### Key Skills
+| Situation | Skill |
+|-----------|-------|
+| Building anything new | `brainstorming` (BEFORE any code) |
+| Multi-step implementation | `writing-plans` → `subagent-driven-development` |
+| Writing any code | `test-driven-development` (test FIRST) |
+| Bug or test failure | `systematic-debugging` (root cause FIRST) |
+| Claiming "done" | `verification-before-completion` (evidence FIRST) |
+| Review code | `requesting-code-review` |
+| Parallel tasks | `dispatching-parallel-agents` |
+| Work complete | `finishing-a-development-branch` |
+
+## File Structure
+
+```
+.claude/
+├── agents/          ← 78 Agency Agent personas
+├── skills/          ← 14 Superpowers skill modules
+├── strategies/      ← Strategy playbooks (phases 0-6) & runbooks
+└── examples/        ← Workflow examples
+```
+
+## Sources
+
+- Agency Agents: [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) (MIT)
+- Superpowers: [obra/superpowers](https://github.com/obra/superpowers) (MIT)
