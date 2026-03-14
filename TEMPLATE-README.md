@@ -18,13 +18,13 @@ A complete AI development framework integrating three complementary systems for 
 Run this from any project directory — no cloning needed:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/ailin546/claude_product/main/install-triple-system.sh | bash
+curl -sL https://raw.githubusercontent.com/ailin546/claude_product/claude/explore-agency-agents-fymmN/install-triple-system.sh | bash
 ```
 
 Or specify a target project:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/ailin546/claude_product/main/install-triple-system.sh | bash -s /path/to/your/project
+curl -sL https://raw.githubusercontent.com/ailin546/claude_product/claude/explore-agency-agents-fymmN/install-triple-system.sh | bash -s /path/to/your/project
 ```
 
 ### Method 2: Local Install

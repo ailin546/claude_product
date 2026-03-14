@@ -14,7 +14,7 @@
 set -e
 
 REPO_URL="https://github.com/ailin546/claude_product.git"
-BRANCH="main"
+BRANCH="claude/explore-agency-agents-fymmN"
 
 # Colors
 GREEN='\033[0;32m'
