@@ -13,17 +13,31 @@ A complete AI development framework integrating three complementary systems for 
 
 ## Quick Install
 
-### Method 1: Install Script
+### Method 1: One-Line Remote Install (Recommended)
+
+Run this from any project directory — no cloning needed:
+
+```bash
+curl -sL https://raw.githubusercontent.com/ailin546/claude_product/main/install-triple-system.sh | bash
+```
+
+Or specify a target project:
+
+```bash
+curl -sL https://raw.githubusercontent.com/ailin546/claude_product/main/install-triple-system.sh | bash -s /path/to/your/project
+```
+
+### Method 2: Local Install
 
 Clone this repo, then run the script pointing to your target project:
 
 ```bash
-git clone <this-repo-url> claude_product
+git clone https://github.com/ailin546/claude_product.git
 cd claude_product
 ./install-triple-system.sh /path/to/your/project
 ```
 
-### Method 2: Copy Manually
+### Method 3: Copy Manually
 
 ```bash
 # Copy the .claude/ directory and CLAUDE.md to your project
@@ -31,7 +45,7 @@ cp -r claude_product/.claude/ /path/to/your/project/
 cp claude_product/CLAUDE.md /path/to/your/project/
 ```
 
-### Method 3: Use as GitHub Template
+### Method 4: Use as GitHub Template
 
 1. Use this repo as a template when creating a new GitHub repository
 2. Your new project will start with the full triple-system pre-configured
