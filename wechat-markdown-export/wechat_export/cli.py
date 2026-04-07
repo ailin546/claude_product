@@ -116,7 +116,7 @@ def _run(args: argparse.Namespace):
         data_paths = _resolve_data_paths(args)
 
         # 查找数据库文件
-        db_files = find_db_files(data_paths.msg_dir)
+        db_files = find_db_files(data_paths)
         if not db_files:
             raise RuntimeError(
                 f"未找到数据库文件: {data_paths.msg_dir}\n"
@@ -222,16 +222,47 @@ def _resolve_data_paths(args: argparse.Namespace) -> WeChatDataPaths:
         data_dir = args.data_dir
         if not data_dir.exists():
             raise RuntimeError(f"指定的目录不存在: {data_dir}")
-        msg_dir = data_dir / "Msg"
-        if not msg_dir.exists():
-            msg_dir = data_dir / "msg"
-        if not msg_dir.exists():
-            msg_dir = data_dir  # 可能直接包含 db 文件
 
+        # 如果指定的是包含多个账号的父目录，扫描子目录
+        from .platform import _detect_account_paths
+
+        paths = _detect_account_paths(data_dir, data_dir.name)
+        if paths is not None:
+            return paths
+
+        # 扫描子目录寻找账号
+        sub_results = []
+        for entry in data_dir.iterdir():
+            if not entry.is_dir():
+                continue
+            if entry.name.lower() in ("all_users", "all users", "applet", "wmpf", "backup"):
+                continue
+            sub = _detect_account_paths(entry, entry.name)
+            if sub is not None:
+                sub_results.append(sub)
+
+        if len(sub_results) == 1:
+            return sub_results[0]
+        if len(sub_results) > 1:
+            print(f"    找到 {len(sub_results)} 个微信账号:")
+            for i, p in enumerate(sub_results):
+                print(f"      [{i + 1}] {p.wxid} ({p.base_dir})")
+            while True:
+                try:
+                    choice = input(f"\n    请选择账号 [1-{len(sub_results)}]: ").strip()
+                    idx = int(choice) - 1
+                    if 0 <= idx < len(sub_results):
+                        return sub_results[idx]
+                except (ValueError, EOFError):
+                    pass
+                print("    无效选择，请重试")
+
+        # 兜底：当作直接包含 db 文件的目录
         return WeChatDataPaths(
             wxid=data_dir.name,
             base_dir=data_dir,
-            msg_dir=msg_dir,
+            msg_dir=data_dir,
+            contact_db=None,
             image_dir=data_dir / "FileStorage" / "Image",
             voice_dir=data_dir / "FileStorage" / "Voice",
             video_dir=data_dir / "FileStorage" / "Video",
