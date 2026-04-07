@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "wechat-markdown-export"
+version = "0.1.0"
+description = "将微信聊天记录导出为 Markdown 文档"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "pysqlcipher3>=1.2.0",
+    "pymem>=1.13.0; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[project.scripts]
+wechat-export = "wechat_export.cli:main"
