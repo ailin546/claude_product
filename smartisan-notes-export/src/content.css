@@ -1,0 +1,52 @@
+.smartisan-export-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 99999;
+  padding: 10px 20px;
+  background: #d4382d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.1s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.smartisan-export-btn:hover {
+  background: #b8301f;
+  transform: translateY(-1px);
+}
+
+.smartisan-export-btn:active {
+  transform: translateY(0);
+}
+
+.smartisan-export-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.smartisan-export-toast {
+  position: fixed;
+  top: 70px;
+  right: 16px;
+  z-index: 99999;
+  padding: 12px 20px;
+  background: #333;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.smartisan-export-toast.show {
+  opacity: 1;
+}
