@@ -29,11 +29,21 @@ def find_wechat_data_windows() -> list[WeChatDataPaths]:
     """在 Windows 上查找微信数据目录"""
     results = []
 
-    # 默认路径: Documents\WeChat Files\
+    # 默认路径
     base_candidates = [
+        # 新版 xwechat 路径
+        Path(os.environ.get("APPDATA", "")) / "Tencent" / "xwechat" / "xwechat_files",
+        Path(os.environ.get("USERPROFILE", "")) / "AppData" / "xwechat_files",
+        # 旧版路径
         Path(os.environ.get("USERPROFILE", "")) / "Documents" / "WeChat Files",
         Path(os.environ.get("APPDATA", "")) / "Tencent" / "WeChat",
     ]
+
+    # 检查所有盘符下的常见路径（你的数据在 E 盘）
+    for drive in "CDEFGH":
+        xwechat_path = Path(f"{drive}:\\Users") / os.environ.get("USERNAME", "Admin") / "AppData" / "xwechat_files"
+        if xwechat_path.exists() and xwechat_path not in base_candidates:
+            base_candidates.insert(0, xwechat_path)
 
     # 也检查自定义安装路径（从注册表获取）
     try:
